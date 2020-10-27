@@ -40,12 +40,6 @@ export default {
       default() {
         return false
       }
-    },
-    svgComponent: {
-      type: [String, Object],
-      default() {
-        return 'svg-icon'
-      }
     }
   },
   render(createElement, ctx) {
@@ -54,18 +48,19 @@ export default {
     const isMenuItem = props.menuData && props.menuData.children === undefined
     if (props.isRoot) {
       const menuRoot = createElement('el-menu', {
-        class: 'side-menu-root',
-        props: {
-          // 'default-openeds': opends,
-          'default-active': data.defaultActive
-        }
-      },
-      props.menuData.map((m) => createElement('wh-side-menu', {
-        props: {
-          key: m.name,
-          menuData: m
-        }
-      })))
+            class: 'side-menu-root',
+            props: {
+              // 'default-openeds': opends,
+              'default-active': data.defaultActive
+            }
+          },
+          props.menuData.map((m) => createElement('wh-side-menu', {
+            props: {
+              key: m.name,
+              menuData: m,
+              router: props.router
+            }
+          })))
       return menuRoot
     } if (isMenuItemGroup) {
       if (!opends.includes(props.menuData.name)) {
@@ -91,35 +86,36 @@ export default {
       }
 
       return createElement(
-        'el-submenu',
-        {
-          props: {
-            index: props.menuData.name
-          },
-          nativeOn: {
-            click(...args) {
-              if (props.menuData.action !== undefined &&
-                  props.menuData.action.constructor === Function) {
-                props.menuData.action(...args)
+          'el-submenu',
+          {
+            props: {
+              index: props.menuData.name
+            },
+            nativeOn: {
+              click(...args) {
+                if (props.menuData.action !== undefined &&
+                    props.menuData.action.constructor === Function) {
+                  props.menuData.action(...args)
+                }
               }
             }
-          }
-        },
-        [
-          createElement('span', {
-            slot: 'title'
-          }, submenuItemContent),
-          props.menuData.children.map((item) => createElement('wh-side-menu', {
-            props: {
-              key: item.name,
-              menuData: item
-            }
-          }))
-        ]
+          },
+          [
+            createElement('span', {
+              slot: 'title'
+            }, submenuItemContent),
+            props.menuData.children.map((item) => createElement('wh-side-menu', {
+              props: {
+                key: item.name,
+                menuData: item,
+                router: props.router
+              }
+            }))
+          ]
       )
     } if (isMenuItem) {
       const r = props.router
-      if (r && r.currentRoute.path === r.resolve(props.menuData.routeTo).route.path) {
+      if (r && props.menuData.routeTo && r.currentRoute.path === r.resolve(props.menuData.routeTo).route.path) {
         data.defaultActive = props.menuData.name
       }
 
@@ -155,7 +151,7 @@ export default {
                 props.menuData.action.constructor === Function) {
               props.menuData.action(...args)
             } else {
-              ctx.router.push(props.menuData.routeTo)
+              props.router.push(props.menuData.routeTo)
             }
           }
         }
