@@ -83,13 +83,11 @@ export default {
       if (props.menuData.menuItemRender) {
         submenuItemContent.push(props.menuData.menuItemRender(createElement, props.menuData))
       } else {
-        submenuItemContent.push(props.menuData.icon ? createElement(props.svgComponent, {
-          style: props.menuData.iconStyle || {},
-          props: {
-            iconClass: props.menuData.icon
-          }
-        }) : null,
-        itemTitle)
+        let icon = null
+        if (props.menuData.iconRender) {
+          icon = props.menuData.iconRender(createElement, props.menuData)
+        }
+        submenuItemContent.push(icon, itemTitle)
       }
 
       return createElement(
@@ -140,12 +138,12 @@ export default {
       if (props.menuData.menuItemRender) {
         itemContent.push(props.menuData.menuItemRender(createElement, props.menuData))
       } else {
-        itemContent.push((props.menuData.icon ? createElement(props.svgComponent, {
-          style: props.menuData.iconStyle || {},
-          props: {
-            iconClass: props.menuData.icon
-          }
-        }) : null), itemTitle)
+        let icon = null
+        if (props.menuData.iconRender) {
+          icon = props.menuData.iconRender(createElement, props.menuData)
+        }
+
+        itemContent.push(icon, itemTitle)
       }
       const innerItem = createElement('el-menu-item', {
         props: {

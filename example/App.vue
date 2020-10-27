@@ -16,6 +16,10 @@ export default {
         {
           name: '用户信息',
           routeTo: { path: '/' },
+          iconRender: (h, data) => {
+            console.log(data)
+            return h('span', '123')
+          },
           children: [
             {
               name: '用户信息11',
