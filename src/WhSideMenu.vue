@@ -8,7 +8,6 @@ Vue.use(Submenu)
 
 const opends = []
 const data = Vue.observable({
-  menuRoot: '',
   defaultActive: ''
 })
 
@@ -40,6 +39,12 @@ export default {
       default() {
         return false
       }
+    },
+    collapse: {
+      type: Boolean,
+      default() {
+        return false
+      }
     }
   },
   render(createElement, ctx) {
@@ -48,21 +53,23 @@ export default {
     const isMenuItem = props.menuData && props.menuData.children === undefined
     if (props.isRoot) {
       const menuRoot = createElement('el-menu', {
-            class: 'side-menu-root',
-            props: {
-              // 'default-openeds': opends,
-              'default-active': data.defaultActive
-            }
-          },
-          props.menuData.map((m) => createElement('wh-side-menu', {
-            props: {
-              key: m.name,
-              menuData: m,
-              router: props.router
-            }
-          })))
+        class: 'side-menu-root',
+        props: {
+          // 'default-openeds': opends,
+          'default-active': data.defaultActive,
+          collapse: props.collapse
+        }
+      },
+      props.menuData.map((m) => createElement('wh-side-menu', {
+        props: {
+          key: m.name,
+          menuData: m,
+          router: props.router
+        }
+      })))
       return menuRoot
-    } if (isMenuItemGroup) {
+    }
+    if (isMenuItemGroup) {
       if (!opends.includes(props.menuData.name)) {
         opends.push(props.menuData.name)
       }
@@ -85,37 +92,40 @@ export default {
         submenuItemContent.push(icon, itemTitle)
       }
 
+      const childrenItems = props.menuData.children.map((item) => createElement('wh-side-menu', {
+        props: {
+          key: item.name,
+          menuData: item,
+          router: props.router
+        }
+      }))
       return createElement(
-          'el-submenu',
-          {
-            props: {
-              index: props.menuData.name
-            },
-            nativeOn: {
-              click(...args) {
-                if (props.menuData.action !== undefined &&
+        'el-submenu',
+        {
+          props: {
+            index: props.menuData.name
+          },
+          nativeOn: {
+            click(...args) {
+              if (props.menuData.action !== undefined &&
                     props.menuData.action.constructor === Function) {
-                  props.menuData.action(...args)
-                }
+                props.menuData.action(...args)
               }
             }
-          },
-          [
-            createElement('span', {
-              slot: 'title'
-            }, submenuItemContent),
-            props.menuData.children.map((item) => createElement('wh-side-menu', {
-              props: {
-                key: item.name,
-                menuData: item,
-                router: props.router
-              }
-            }))
-          ]
+          }
+        },
+        [
+          createElement('span', {
+            slot: 'title'
+          }, submenuItemContent),
+          childrenItems
+        ]
       )
-    } if (isMenuItem) {
+    }
+    if (isMenuItem) {
       const r = props.router
-      if (r && props.menuData.routeTo && r.currentRoute.path === r.resolve(props.menuData.routeTo).route.path) {
+      if (r && props.menuData.routeTo &&
+          r.currentRoute.path === r.resolve(props.menuData.routeTo).route.path) {
         data.defaultActive = props.menuData.name
       }
 
@@ -185,7 +195,7 @@ export default {
       color: #fff;
     }
     .el-menu-item.is-active {
-      background-color: #0084ff!important;
+      background-color: #0084ff;
     }
     .el-menu-item{
       &:hover, &:focus{
@@ -198,7 +208,7 @@ export default {
       }
     }
     .el-submenu .el-menu-item{
-      padding-left: 60px!important;
+      padding-left: 60px;
     }
   }
 }
