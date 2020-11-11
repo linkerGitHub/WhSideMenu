@@ -1,6 +1,6 @@
 {
   "name": "whsidemenu",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "侧边菜单栏",
   "main": "index.js",
   "scripts": {
