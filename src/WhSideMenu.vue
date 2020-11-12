@@ -52,11 +52,7 @@ export default {
     const isMenuItemGroup = props.menuData && props.menuData.children !== undefined
     const isMenuItem = props.menuData && props.menuData.children === undefined
     if (props.isRoot) {
-      const r = props.router
-      if (r && props.menuData.routeTo &&
-          r.currentRoute.path === r.resolve(props.menuData.routeTo).route.path) {
-        data.defaultActive = props.menuData.name
-      }
+      Vue.observable(props.router)
       const menuRoot = createElement('el-menu', {
         class: 'side-menu-root',
         props: {
@@ -128,12 +124,6 @@ export default {
       )
     }
     if (isMenuItem) {
-      const r = props.router
-      if (r && props.menuData.routeTo &&
-          r.currentRoute.path === r.resolve(props.menuData.routeTo).route.path) {
-        data.defaultActive = props.menuData.name
-      }
-
       let itemTitle = createElement('span', {
         slot: 'title'
       }, props.menuData.name)
