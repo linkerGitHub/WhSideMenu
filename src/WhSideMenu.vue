@@ -124,6 +124,12 @@ export default {
       )
     }
     if (isMenuItem) {
+      const r = props.router
+      if (r && props.menuData.routeTo &&
+          r.currentRoute.path === r.resolve(props.menuData.routeTo).route.path) {
+        data.defaultActive = props.menuData.name
+      }
+
       let itemTitle = createElement('span', {
         slot: 'title'
       }, props.menuData.name)
